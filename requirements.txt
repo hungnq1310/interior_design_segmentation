@@ -1,4 +1,4 @@
-transformers
+transformers==4.44.2
 pillow
 numpy==1.26.4
 gradio
