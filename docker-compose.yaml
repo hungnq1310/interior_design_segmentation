@@ -1,4 +1,24 @@
 services:
+
+  design-seg:
+    image: heronq02/design-seg:r0.0.1
+    environment:
+      MODEL_NAME: "ensemble"
+      PROTOCOL: "http"
+      ASYNC_SET: "True"
+      TRITON_URL: "localhost:8000"
+      MODEL_NAME_OR_PATH: "models/maskformer/1"
+    links:
+      - triton:triton
+    ports:
+      - "7900:7900"
+    mounts:
+      - "${PWD}/datahub:/datahub"
+    depends_on:
+      triton:
+        condition: service_healthy
+    command: fastapi run api/main.py --port 7999 --root-path /design-seg
+
   triton:
     build:
       context: .
