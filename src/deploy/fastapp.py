@@ -119,6 +119,9 @@ async def segment(requests: ListImageItem) -> JSONResponse:
 
     # Get the image data
     inputs = np.array(requests.data, dtype="object")
+    targets_size = [
+        Image.open(io.BytesIO(buffer)).convert('RGB').size[::-1] for buffer in inputs
+    ]
 
     # Generate the request
     inputs, outputs = requestGenerator(
