@@ -68,26 +68,18 @@ def parse_model(model_metadata, model_config):
 
     # Model input must have 3 dims, either CHW or HWC (not counting
     # the batch dimension), either CHW or HWC
-    input_batch_dim = model_config.max_batch_size > 0
-    expected_input_dims = 3 + (1 if input_batch_dim else 0)
+    expected_input_dims = 1
     if len(input_metadata.shape) != expected_input_dims:
         raise Exception(
             "expecting input to have {} dimensions, model '{}' input has {}".format(
                 expected_input_dims, model_metadata.name, len(input_metadata.shape)
             )
         )
-
-    c = input_metadata.shape[1]
-    h = input_metadata.shape[2]
-    w = input_metadata.shape[3]
-
+    
     return (
         model_config.max_batch_size,
         input_metadata.name,
         [output1_metadata.name, output2_metadata.name],
-        c,
-        h,
-        w,
         input_config.format,
         input_metadata.datatype,
     )
