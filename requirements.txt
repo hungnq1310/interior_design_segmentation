@@ -1,5 +1,11 @@
+--index-url https://download.pytorch.org/whl/cpu
 transformers
-torch==2.2.0
+torch==2.2.2 
 pillow
-numpy==2.26.0
+numpy==1.26.4
 gradio
+fastapi[standard]
+tritonclient[all]
+pydantic
+attrdict
+python-dotenv
