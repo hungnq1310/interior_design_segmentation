@@ -9,6 +9,7 @@ import json
 
 from pydantic import BaseModel
 from fastapi import FastAPI, UploadFile, File
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
 from dotenv import load_dotenv
 from PIL import Image
@@ -19,8 +20,8 @@ import tritonclient.grpc as grpcclient
 import tritonclient.http as httpclient
 from tritonclient.utils import InferenceServerException
 
-from projects.interior_design_segmentation.src.utils import client
-from projects.interior_design_segmentation.src.utils.image import SEGMENT_COLOR
+from src.utils import client
+from src.utils.image import SEGMENT_COLOR
 
 #############
 # Initialize
@@ -37,7 +38,7 @@ verbose       = os.getenv("VERBOSE", "False").lower() in ("true", "1", "t")
 async_set     = os.getenv("ASYNC_SET", "False").lower() in ("true", "1", "t")
 #
 model_name_or_path = os.getenv('MODEL_NAME_OR_PATH')
-artifacts = os.getenv('ARTIFACTS', './datahub/output')
+artifacts = os.getenv('ARTIFACTS', 'datahub/output')
 os.makedirs(artifacts, exist_ok=True)
 
 ############
@@ -99,6 +100,7 @@ LABEL = config_file['label2id']
 ###########
 
 app = FastAPI()
+app.mount("/datahub/output", StaticFiles(directory=artifacts), name="data")
 #
 class ListImageItem(BaseModel):
     data: List[Any]
