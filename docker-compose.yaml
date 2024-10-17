@@ -1,0 +1,38 @@
+services:
+
+  design-seg:
+    image: heronq02/design-seg:r0.0.1
+    environment:
+      MODEL_NAME: "ensemble"
+      PROTOCOL: "http"
+      ASYNC_SET: "True"
+      TRITON_URL: "localhost:8000"
+      MODEL_NAME_OR_PATH: "models/maskformer/1"
+    links:
+      - triton:triton
+    ports:
+      - "7900:7900"
+    mounts:
+      - "${PWD}/datahub:/datahub"
+    depends_on:
+      triton:
+        condition: service_healthy
+    command: fastapi run api/main.py --port 7999 --root-path /design-seg
+
+  triton:
+    build:
+      context: .
+      dockerfile: Dockerfile.triton
+    shm_size: '4gb'
+    volumes:
+      - ${PWD}/models:/models
+    ports:
+      - "8000:8000"
+      - "8001:8001"
+      - "8002:8002"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/v2/health/ready"]
+      interval: 30s
+      timeout: 5s
+      retries: 2
+    command: tritonserver --model-repository=/models 
